@@ -46,7 +46,8 @@ builder.Services.AddScoped<IWorkoutTssCalculator, WorkoutTssCalculator>();
 // Configure MCP Server with HTTP transport
 builder.Services.AddMcpServer()
     .WithHttpTransport() // Enable streamable HTTP for MCP
-    .WithToolsFromAssembly(); // Add all classes marked with [McpServerToolType]
+    .WithToolsFromAssembly() // Add all classes marked with [McpServerToolType]
+    .WithPromptsFromAssembly(); // Add all classes marked with [McpServerPromptType]
 
 // Configure CORS for MCP server (required for HTTP transport with GitHub Copilot)
 builder.Services.AddCors(options =>

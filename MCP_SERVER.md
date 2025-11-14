@@ -8,6 +8,7 @@ The Model Context Protocol (MCP) is an open standard that allows AI agents to se
 
 - Query athlete profiles, activities, wellness data, and upcoming events
 - Generate structured workouts with proper zone targeting
+- Use pre-built training prompts to guide training analysis and planning
 - Interact with your training data using natural language
 
 ## Available MCP Tools
