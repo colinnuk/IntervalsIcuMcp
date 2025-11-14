@@ -1,5 +1,5 @@
 using System.Text;
-namespace LlmFitnessCoach.WebAPI.Helpers;
+namespace IntervalsIcuMcp.Helpers;
 
 public static class IntervalsIcuHttpClientFactory
 {

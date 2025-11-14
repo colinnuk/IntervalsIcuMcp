@@ -2,7 +2,7 @@ using System.ComponentModel;
 using IntervalsIcuMcp.Models;
 using IntervalsIcuMcp.Services;
 
-namespace LlmFitnessCoach.WebAPI.LlmPlugins;
+namespace IntervalsIcuMcp.LlmPlugins;
 
 public class WorkoutGeneratorPlugin(WorkoutGeneratorService service)
 {

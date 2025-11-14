@@ -4,7 +4,6 @@ using IntervalsIcuMcp.Models.IntervalsIcu;
 
 namespace IntervalsIcuMcp.LlmPlugins;
 
-// This class is the SK-facing abstraction layer. It exposes kernel functions and delegates to IntervalsIcuService (and caches if present).
 public class IntervalsIcuPlugin(IAthleteProfileCache athleteCache, IIntervalsIcuService icuService)
 {
     private readonly IAthleteProfileCache _athleteCache = athleteCache;
