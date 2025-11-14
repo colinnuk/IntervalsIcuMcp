@@ -3,7 +3,6 @@ using IntervalsIcuMcp.Helpers;
 using IntervalsIcuMcp;
 using Microsoft.Extensions.Options;
 using IntervalsIcuMcp.Services;
-using IntervalsIcuMcp.LlmPlugins;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,8 +29,22 @@ builder.Services.AddScoped<IAthleteProfileCache, AthleteProfileCache>();
 builder.Services.AddScoped<IWorkoutGeneratorService, WorkoutGeneratorService>();
 builder.Services.AddScoped<IIntervalsIcuWorkoutTextService, IntervalsIcuWorkoutTextService>();
 builder.Services.AddScoped<IWorkoutTssCalculator, WorkoutTssCalculator>();
-builder.Services.AddScoped<IntervalsIcuPlugin>();
-builder.Services.AddScoped<WorkoutGeneratorPlugin>();
+
+// Configure MCP Server with HTTP transport
+builder.Services.AddMcpServer()
+    .WithHttpTransport() // Enable streamable HTTP for MCP
+    .WithToolsFromAssembly(); // Add all classes marked with [McpServerToolType]
+
+// Configure CORS for MCP server (required for HTTP transport with GitHub Copilot)
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -42,5 +55,8 @@ app.MapOpenApi();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapMcp("/api/mcp");
+app.UseCors();
 
 app.Run();
