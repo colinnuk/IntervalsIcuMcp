@@ -6,16 +6,10 @@ using ModelContextProtocol.Server;
 namespace IntervalsIcuMcp.McpServer;
 
 [McpServerToolType]
-public class IntervalsIcuMcpTool
+public class IntervalsIcuMcpTool(IAthleteProfileCache athleteCache, IIntervalsIcuService icuService)
 {
-    private readonly IAthleteProfileCache _athleteCache;
-    private readonly IIntervalsIcuService _icuService;
-
-    public IntervalsIcuMcpTool(IAthleteProfileCache athleteCache, IIntervalsIcuService icuService)
-    {
-        _athleteCache = athleteCache;
-        _icuService = icuService;
-    }
+    private readonly IAthleteProfileCache _athleteCache = athleteCache;
+    private readonly IIntervalsIcuService _icuService = icuService;
 
     [McpServerTool]
     [Description("Gets the athlete's profile information including FTP, weight, heart rate zones, and other fitness metrics (cached).")]
