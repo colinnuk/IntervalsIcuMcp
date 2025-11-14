@@ -6,6 +6,9 @@ using IntervalsIcuMcp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add local settings file (gitignored) for development secrets
+builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
@@ -13,8 +16,18 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<IntervalsIcuOptions>(options =>
 {
-    options.ApiKey = Environment.GetEnvironmentVariable(IntervalsIcuOptions.ApiKeyEnvVar) ?? string.Empty;
-    options.AthleteId = Environment.GetEnvironmentVariable(IntervalsIcuOptions.AthleteIdEnvVar) ?? string.Empty;
+    // First, bind from configuration (appsettings.json)
+    builder.Configuration.GetSection(IntervalsIcuOptions.SectionName).Bind(options);
+    
+    // Then override with environment variables if they exist (takes precedence)
+    var apiKeyFromEnv = Environment.GetEnvironmentVariable(IntervalsIcuOptions.ApiKeyEnvVar);
+    var athleteIdFromEnv = Environment.GetEnvironmentVariable(IntervalsIcuOptions.AthleteIdEnvVar);
+    
+    if (!string.IsNullOrEmpty(apiKeyFromEnv))
+        options.ApiKey = apiKeyFromEnv;
+    
+    if (!string.IsNullOrEmpty(athleteIdFromEnv))
+        options.AthleteId = athleteIdFromEnv;
 });
 
 builder.Services.AddHttpClient(StringConsts.IntervalsIcuApiClientName, (serviceProvider, client) =>
