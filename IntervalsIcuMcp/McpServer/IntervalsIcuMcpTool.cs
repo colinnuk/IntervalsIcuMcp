@@ -25,10 +25,11 @@ public class IntervalsIcuMcpTool
     }
 
     [McpServerTool]
-    [Description("Gets the last 6 weeks of activities from the athlete's calendar including workouts, races, and training sessions")]
-    public async Task<Activity[]?> GetRecentActivitiesAsync()
+    [Description("Gets recent activities from the athlete's calendar including workouts, races, and training sessions")]
+    public async Task<Activity[]?> GetRecentActivitiesAsync(
+        [Description("Number of days to look back (default: 42)")] int daysBehind = 42)
     {
-        return await _icuService.GetRecentActivitiesAsync();
+        return await _icuService.GetRecentActivitiesAsync(daysBehind);
     }
 
     [McpServerTool]

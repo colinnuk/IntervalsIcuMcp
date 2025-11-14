@@ -24,9 +24,9 @@ namespace IntervalsIcuMcp.Controllers
         }
 
         [HttpGet("recent-activities")]
-        public async Task<ActionResult<Activity[]?>> GetRecentActivities()
+        public async Task<ActionResult<Activity[]?>> GetRecentActivities([FromQuery] int daysBehind = 42)
         {
-            var result = await _icuService.GetRecentActivitiesAsync();
+            var result = await _icuService.GetRecentActivitiesAsync(daysBehind);
             return Ok(result);
         }
 
