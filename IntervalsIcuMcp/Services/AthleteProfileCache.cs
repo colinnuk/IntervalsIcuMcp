@@ -9,10 +9,10 @@ public interface IAthleteProfileCache
 }
 
 public class AthleteProfileCache(
-    IntervalsIcuService intervalsIcu,
+    IIntervalsIcuService intervalsIcu,
     ILogger<AthleteProfileCache> logger) : IAthleteProfileCache
 {
-    private readonly IntervalsIcuService _intervalsIcu = intervalsIcu;
+    private readonly IIntervalsIcuService _intervalsIcu = intervalsIcu;
     private readonly ILogger<AthleteProfileCache> _logger = logger;
     private AthleteProfile? _cachedProfile;
 

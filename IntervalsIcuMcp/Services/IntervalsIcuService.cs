@@ -16,12 +16,12 @@ public interface IIntervalsIcuService
 }
 
 public class IntervalsIcuService(
-    HttpClient httpClient,
+    IHttpClientFactory httpClientFactory,
     IOptions<IntervalsIcuOptions> options,
     ILogger<IntervalsIcuService> logger,
     IIntervalsIcuWorkoutTextService workoutTextService) : IIntervalsIcuService
 {
-    private readonly HttpClient _httpClient = httpClient;
+    private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly IntervalsIcuOptions _options = options.Value;
     private readonly ILogger<IntervalsIcuService> _logger = logger;
     private readonly IIntervalsIcuWorkoutTextService _workoutTextService = workoutTextService;
@@ -112,7 +112,8 @@ public class IntervalsIcuService(
     {
         _logger.LogInformation("Fetching {Operation}", operationName);
 
-        var response = await _httpClient.GetAsync(endpoint);
+        var httpClient = _httpClientFactory.CreateClient(StringConsts.IntervalsIcuApiClientName);
+        var response = await httpClient.GetAsync(endpoint);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -131,10 +132,11 @@ public class IntervalsIcuService(
     {
         _logger.LogInformation("Posting {Operation}", operationName);
 
+        var httpClient = _httpClientFactory.CreateClient(StringConsts.IntervalsIcuApiClientName);
         var jsonContent = JsonSerializer.Serialize(requestBody, _jsonSerializerOptions);
         var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-        var response = await _httpClient.PostAsync(endpoint, httpContent);
+        var response = await httpClient.PostAsync(endpoint, httpContent);
 
         if (!response.IsSuccessStatusCode)
         {

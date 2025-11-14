@@ -7,21 +7,14 @@ namespace IntervalsIcuMcp.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class McpToolController : ControllerBase
+    public class McpToolController(
+        IAthleteProfileCache athleteCache,
+        IIntervalsIcuService icuService,
+        IWorkoutGeneratorService workoutService) : ControllerBase
     {
-        private readonly IAthleteProfileCache _athleteCache;
-        private readonly IIntervalsIcuService _icuService;
-        private readonly IWorkoutGeneratorService _workoutService;
-
-        public McpToolController(
-            IAthleteProfileCache athleteCache,
-            IIntervalsIcuService icuService,
-            IWorkoutGeneratorService workoutService)
-        {
-            _athleteCache = athleteCache;
-            _icuService = icuService;
-            _workoutService = workoutService;
-        }
+        private readonly IAthleteProfileCache _athleteCache = athleteCache;
+        private readonly IIntervalsIcuService _icuService = icuService;
+        private readonly IWorkoutGeneratorService _workoutService = workoutService;
 
         [HttpGet("athlete-profile")]
         public async Task<ActionResult<AthleteProfile?>> GetAthleteProfile()
