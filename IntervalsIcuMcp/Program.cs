@@ -1,3 +1,5 @@
+using IntervalsIcuMcp.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,6 +7,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+// Bind IntervalsIcuOptions from environment variables
+builder.Services.Configure<IntervalsIcuOptions>(options =>
+{
+    options.ApiKey = Environment.GetEnvironmentVariable(IntervalsIcuOptions.ApiKeyEnvVar) ?? string.Empty;
+    options.AthleteId = Environment.GetEnvironmentVariable(IntervalsIcuOptions.AthleteIdEnvVar) ?? string.Empty;
+});
 
 var app = builder.Build();
 
