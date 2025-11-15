@@ -38,7 +38,11 @@ public class WorkoutTssCalculatorTests
         var context = new WorkoutEstimationContext
         {
             FtpWatts = ftp,
-            PowerZones = powerZones
+            PowerZones = powerZones.ToList(),
+            LthrBpm = 0,
+            MaxHrBpm = 0,
+            RestHrBpm = 0,
+            HrZones = new List<int>()
         };
 
         // Act
@@ -62,8 +66,12 @@ public class WorkoutTssCalculatorTests
         var hrZones = new[] { 146, 162, 178, 194, 210, 226, 242 }; // 170 LTHR
         var context = new WorkoutEstimationContext
         {
-            LthrBpm = lthr,
-            HrZones = hrZones
+            LthrBpm = (int)lthr,
+            HrZones = hrZones.ToList(),
+            FtpWatts = null,
+            PowerZones = null,
+            MaxHrBpm = 0,
+            RestHrBpm = 0
         };
 
         // Act
@@ -81,7 +89,15 @@ public class WorkoutTssCalculatorTests
     {
         // Arrange
         var intervals = new[] { new WorkoutInterval("Test", 600, WorkoutZoneType.Z3) };
-        var context = new WorkoutEstimationContext();
+        var context = new WorkoutEstimationContext
+        {
+            LthrBpm = 0,
+            MaxHrBpm = 0,
+            RestHrBpm = 0,
+            HrZones = new List<int>(),
+            FtpWatts = null,
+            PowerZones = null
+        };
 
         // Act
         var tss = _calculator.EstimateTss(intervals, context, sport);
@@ -100,7 +116,15 @@ public class WorkoutTssCalculatorTests
             new WorkoutInterval("Negative", -300, WorkoutZoneType.Z3),
             new WorkoutInterval("Valid", 600, WorkoutZoneType.Z3)
         };
-        var context = new WorkoutEstimationContext();
+        var context = new WorkoutEstimationContext
+        {
+            LthrBpm = 0,
+            MaxHrBpm = 0,
+            RestHrBpm = 0,
+            HrZones = new List<int>(),
+            FtpWatts = null,
+            PowerZones = null
+        };
 
         // Act
         var tss = _calculator.EstimateTss(intervals, context, SportType.Ride);
@@ -117,7 +141,15 @@ public class WorkoutTssCalculatorTests
     {
         // Arrange - No zones or thresholds provided
         var intervals = new[] { new WorkoutInterval("Ride", 3600, WorkoutZoneType.Z3) };
-        var context = new WorkoutEstimationContext();
+        var context = new WorkoutEstimationContext
+        {
+            LthrBpm = 0,
+            MaxHrBpm = 0,
+            RestHrBpm = 0,
+            HrZones = new List<int>(),
+            FtpWatts = null,
+            PowerZones = null
+        };
 
         // Act
         var tss = _calculator.EstimateTss(intervals, context, SportType.Ride);
@@ -138,7 +170,11 @@ public class WorkoutTssCalculatorTests
         var context = new WorkoutEstimationContext
         {
             FtpWatts = ftp,
-            PowerZones = powerZones
+            PowerZones = powerZones.ToList(),
+            LthrBpm = 0,
+            MaxHrBpm = 0,
+            RestHrBpm = 0,
+            HrZones = new List<int>()
         };
 
         // Act
@@ -170,7 +206,11 @@ public class WorkoutTssCalculatorTests
         var context = new WorkoutEstimationContext
         {
             FtpWatts = ftp,
-            PowerZones = powerZones
+            PowerZones = powerZones.ToList(),
+            LthrBpm = 0,
+            MaxHrBpm = 0,
+            RestHrBpm = 0,
+            HrZones = new List<int>()
         };
 
         // Act
@@ -193,8 +233,12 @@ public class WorkoutTssCalculatorTests
         var hrZones = new[] { 146, 162, 178, 194, 210, 226, 242 };
         var context = new WorkoutEstimationContext
         {
-            LthrBpm = lthr,
-            HrZones = hrZones
+            LthrBpm = (int)lthr,
+            HrZones = hrZones.ToList(),
+            FtpWatts = null,
+            PowerZones = null,
+            MaxHrBpm = 0,
+            RestHrBpm = 0
         };
 
         // Act
@@ -210,7 +254,15 @@ public class WorkoutTssCalculatorTests
         // Arrange - Test two edge cases
         var intervals = new[] { new WorkoutInterval("Test", 600, WorkoutZoneType.Z3) };
         var emptyIntervals = Array.Empty<WorkoutInterval>();
-        var context = new WorkoutEstimationContext();
+        var context = new WorkoutEstimationContext
+        {
+            LthrBpm = 0,
+            MaxHrBpm = 0,
+            RestHrBpm = 0,
+            HrZones = new List<int>(),
+            FtpWatts = null,
+            PowerZones = null
+        };
 
         // Act & Assert - Unsupported sport returns null
         var ifUnsupported = _calculator.EstimateIntensityFactor(intervals, context, SportType.Yoga);
@@ -229,7 +281,11 @@ public class WorkoutTssCalculatorTests
         var context = new WorkoutEstimationContext
         {
             FtpWatts = 250.0,
-            PowerZones = powerZones
+            PowerZones = powerZones.ToList(),
+            LthrBpm = 0,
+            MaxHrBpm = 0,
+            RestHrBpm = 0,
+            HrZones = new List<int>()
         };
 
         // Equal time: 50% Z2, 50% Z5
@@ -267,7 +323,11 @@ public class WorkoutTssCalculatorTests
         var context = new WorkoutEstimationContext
         {
             FtpWatts = ftp,
-            PowerZones = powerZones
+            PowerZones = powerZones.ToList(),
+            LthrBpm = 0,
+            MaxHrBpm = 0,
+            RestHrBpm = 0,
+            HrZones = new List<int>()
         };
 
         var intervals = new[] {
@@ -294,7 +354,11 @@ public class WorkoutTssCalculatorTests
         var context = new WorkoutEstimationContext
         {
             FtpWatts = ftp,
-            PowerZones = powerZones
+            PowerZones = powerZones.ToList(),
+            LthrBpm = 0,
+            MaxHrBpm = 0,
+            RestHrBpm = 0,
+            HrZones = new List<int>()
         };
 
         var intervals = new[] {
@@ -323,8 +387,12 @@ public class WorkoutTssCalculatorTests
         var hrZones = new[] { 150, 166, 182, 198, 214, 230, 246 };
         var context = new WorkoutEstimationContext
         {
-            LthrBpm = lthr,
-            HrZones = hrZones
+            LthrBpm = (int)lthr,
+            HrZones = hrZones.ToList(),
+            FtpWatts = null,
+            PowerZones = null,
+            MaxHrBpm = 0,
+            RestHrBpm = 0
         };
 
         var intervals = new[] {

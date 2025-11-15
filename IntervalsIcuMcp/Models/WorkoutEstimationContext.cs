@@ -1,11 +1,11 @@
-namespace IntervalsIcuMcp.Models;
+﻿namespace IntervalsIcuMcp.Models;
 
 public class WorkoutEstimationContext
 {
     public double? FtpWatts { get; init; }
-    public double? LthrBpm { get; init; }
-    public double? MaxHrBpm { get; init; }
-    public double? RestHrBpm { get; init; }
-    public int[]? PowerZones { get; init; }
-    public int[]? HrZones { get; init; }
+    public required int LthrBpm { get; init; }
+    public required int MaxHrBpm { get; init; }
+    public required int RestHrBpm { get; init; }
+    public List<int>? PowerZones { get; init; }
+    public required List<int> HrZones { get; init; }
 }

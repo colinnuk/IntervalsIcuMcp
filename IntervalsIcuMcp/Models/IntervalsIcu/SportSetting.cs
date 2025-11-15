@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace IntervalsIcuMcp.Models.IntervalsIcu;
 
@@ -10,10 +10,16 @@ public record SportSetting(
     [property: JsonPropertyName("indoor_ftp")] int? IndoorFtp,
     [property: JsonPropertyName("w_prime")] int? WPrime,
     [property: JsonPropertyName("p_max")] int? PMax,
+    /// <summary>
+    /// Power Zones from Intervals API are expressed as an array of zone boundaries as a percentage of FTP.
+    /// </summary>
     [property: JsonPropertyName("power_zones")] int[]? PowerZones,
     [property: JsonPropertyName("power_zone_names")] string[]? PowerZoneNames,
     [property: JsonPropertyName("lthr")] int? Lthr,
     [property: JsonPropertyName("max_hr")] int? MaxHr,
+    /// <summary>
+    /// HR Zones from Intervals API are expressed as an array of zone boundaries as heart rate in BPM.
+    /// </summary>
     [property: JsonPropertyName("hr_zones")] int[]? HrZones,
     [property: JsonPropertyName("hr_zone_names")] string[]? HrZoneNames,
     [property: JsonPropertyName("threshold_pace")] double? ThresholdPace,
