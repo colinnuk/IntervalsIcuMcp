@@ -134,6 +134,55 @@ This project implements an MCP server that allows AI agents to interact with you
 - `LlmPlugins/` - Extensible plugins for custom logic
 - `Extensions/` - Helper extensions
 
+## Testing
+
+This project includes focused unit tests using **NUnit**, targeting .NET 10.
+
+### Test Framework: NUnit 4.3.2
+
+The test suite provides essential coverage with **10 core tests** organized around key functionality:
+
+**EstimateTss Tests (6 tests):**
+- Cycling and running sport calculations
+- Unsupported sport handling (returns null)
+- Edge cases (empty/zero/negative durations)
+- Missing athlete data fallback to defaults
+- Multi-interval additivity
+
+**EstimateIntensityFactor Tests (4 tests):**
+- Cycling and running calculations with clamping
+- Empty/unsupported sport edge cases
+- Duration-weighted intensity calculations
+
+**Real-World Scenarios (3 tests):**
+- Typical endurance ride (90 minutes, steady Z2)
+- High-intensity interval training (HIIT with Z6 efforts)
+- Tempo run with sustained effort
+
+### Running Tests
+
+```bash
+# Run all tests
+dotnet test
+
+# Run tests with verbose output
+dotnet test --verbosity detailed
+
+# Run specific test class
+dotnet test --filter "ClassName=WorkoutTssCalculatorTests"
+
+# Run with code coverage
+dotnet test /p:CollectCoverageMetrics=true
+```
+
+### Test Coverage Notes
+
+The test suite consolidates related scenarios to maintain clarity while reducing redundancy:
+- Multiple sport type tests are covered via parametrized tests (e.g., multiple unsupported sports in a single test with `[TestCase]`)
+- Missing data scenarios (no FTP, no zones, zero values) are tested in a single comprehensive test
+- Zone variations are tested through real-world scenarios rather than isolated zone tests
+- All edge cases are validated with realistic data ranges
+
 ## Contributing
 Pull requests and issues are welcome. Please follow standard C# and .NET coding conventions.
 

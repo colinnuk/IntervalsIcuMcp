@@ -7,5 +7,6 @@
     <File Path="MCP_SERVER.md" />
     <File Path="README.md" />
   </Folder>
+  <Project Path="IntervalsIcuMcp.Tests/IntervalsIcuMcp.Tests.csproj" Id="fa2ed44c-e0e1-4c53-9325-09f5ea3726a6" />
   <Project Path="IntervalsIcuMcp/IntervalsIcuMcp.csproj" />
 </Solution>

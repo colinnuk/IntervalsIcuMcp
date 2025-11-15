@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using IntervalsIcuMcp.Extensions;
 using IntervalsIcuMcp.Models;
 
@@ -9,8 +10,10 @@ public interface IWorkoutTssCalculator
     double? EstimateIntensityFactor(IEnumerable<WorkoutInterval> workoutIntervals, WorkoutEstimationContext context, SportType sport);
 }
 
-public class WorkoutTssCalculator : IWorkoutTssCalculator
+public class WorkoutTssCalculator(ILogger<WorkoutTssCalculator> logger) : IWorkoutTssCalculator
 {
+    private readonly ILogger<WorkoutTssCalculator> _logger = logger;
+
     /// <summary>
     /// Estimate Training Stress Score (TSS) for the workout.
     /// TSS is computed as sum over intervals: durationHours * IF^2 * 100.
@@ -19,7 +22,16 @@ public class WorkoutTssCalculator : IWorkoutTssCalculator
     /// </summary>
     public int? EstimateTss(IEnumerable<WorkoutInterval> workoutIntervals, WorkoutEstimationContext context, SportType sport)
     {
-        if (!sport.SupportsTss())
+        _logger.LogInformation(
+            "EstimateTss called with sport: {Sport}, intervals count: {IntervalsCount}, FtpWatts: {FtpWatts}, PowerZones: {PowerZones}, LthrBpm: {LthrBpm}, HrZones: {HrZones}",
+            sport,
+            workoutIntervals?.Count() ?? 0,
+            context.FtpWatts,
+            context.PowerZones,
+            context.LthrBpm,
+            context.HrZones
+        );
+        if (!sport.SupportsTss() || workoutIntervals is null)
         {
             return null;
         }
@@ -29,9 +41,12 @@ public class WorkoutTssCalculator : IWorkoutTssCalculator
         {
             var ifValue = EstimateIf(interval, context, sport);
             var durationHours = Math.Max(0, interval.DurationSeconds) / 3600d;
+            _logger.LogDebug("Interval: {Interval}, IF: {IfValue}, DurationHours: {DurationHours}", interval, ifValue, durationHours);
             totalTss += durationHours * ifValue * ifValue * 100;
         }
-        return (int)Math.Round(totalTss);
+        int result = (int)Math.Round(totalTss);
+        _logger.LogInformation("Estimated TSS: {Tss}", result);
+        return result;
     }
 
     /// <summary>
@@ -41,7 +56,16 @@ public class WorkoutTssCalculator : IWorkoutTssCalculator
     /// </summary>
     public double? EstimateIntensityFactor(IEnumerable<WorkoutInterval> workoutIntervals, WorkoutEstimationContext context, SportType sport)
     {
-        if (!sport.SupportsTss())
+        _logger.LogInformation(
+            "EstimateIntensityFactor called with sport: {Sport}, intervals count: {IntervalsCount}, FtpWatts: {FtpWatts}, PowerZones: {PowerZones}, LthrBpm: {LthrBpm}, HrZones: {HrZones}",
+            sport,
+            workoutIntervals?.Count() ?? 0,
+            context.FtpWatts,
+            context.PowerZones,
+            context.LthrBpm,
+            context.HrZones
+        );
+        if (!sport.SupportsTss() || workoutIntervals is null)
         {
             return null;
         }
@@ -62,7 +86,8 @@ public class WorkoutTssCalculator : IWorkoutTssCalculator
             return 0;
         }
 
-        return Math.Round(totalWeightedIf / totalDuration, 3);
+        double result = Math.Round(totalWeightedIf / totalDuration, 3);
+        return result;
     }
 
     private static double EstimateIf(WorkoutInterval interval, WorkoutEstimationContext ctx, SportType sport)
