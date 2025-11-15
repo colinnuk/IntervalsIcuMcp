@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.Extensions.Options;
 using System.Text;
 using IntervalsIcuMcp.Models.IntervalsIcu;
@@ -80,7 +80,7 @@ public class IntervalsIcuService(
     {
         _logger.LogInformation("Adding workout event: {WorkoutName} on {Date}", plannedWorkout.Name, plannedWorkout.DateTime);
 
-        var workoutText = _workoutTextService.ToIntervalsIcuText(plannedWorkout.Workout, athleteProfile);
+        var workoutText = await _workoutTextService.ToIntervalsIcuTextAsync(plannedWorkout.Workout);
 
         // Create the event request payload
         var eventRequest = new

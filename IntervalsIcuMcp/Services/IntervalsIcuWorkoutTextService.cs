@@ -1,4 +1,4 @@
-using IntervalsIcuMcp.Extensions;
+﻿using IntervalsIcuMcp.Extensions;
 using IntervalsIcuMcp.Models;
 using IntervalsIcuMcp.Models.IntervalsIcu;
 using System.Text;
@@ -9,17 +9,25 @@ public interface IIntervalsIcuWorkoutTextService
 {
     /// <summary>
     /// Converts a <see cref="Workout"/> into intervals.icu workout builder text.
-    /// Optionally provide an athlete profile to convert fractional heart rate targets to BPM.
+    /// Automatically retrieves the athlete profile to convert zone targets to BPM/Watts.
     /// </summary>
     /// <param name="workout">The workout to convert.</param>
-    /// <param name="athleteProfile">athlete profile used to map fractional heart rate targets to BPM using LTHR/MaxHR.</param>
     /// <returns>The intervals.icu workout builder text.</returns>
-    string ToIntervalsIcuText(Workout workout, AthleteProfile athleteProfile);
+    Task<string> ToIntervalsIcuTextAsync(Workout workout);
 }
 
-public class IntervalsIcuWorkoutTextService : IIntervalsIcuWorkoutTextService
+public class IntervalsIcuWorkoutTextService(IAthleteProfileRetriever athleteProfileRetriever) : IIntervalsIcuWorkoutTextService
 {
-    public string ToIntervalsIcuText(Workout workout, AthleteProfile athleteProfile)
+    private readonly IAthleteProfileRetriever _athleteProfileRetriever = athleteProfileRetriever;
+
+    public async Task<string> ToIntervalsIcuTextAsync(Workout workout)
+    {
+        var athleteProfile = await _athleteProfileRetriever.GetAsync() 
+            ?? throw new InvalidOperationException("Could not retrieve athlete profile from Intervals.icu.");
+        return ToIntervalsIcuText(workout, athleteProfile);
+    }
+
+    private static string ToIntervalsIcuText(Workout workout, AthleteProfile athleteProfile)
     {
         var sb = new StringBuilder();
 
@@ -44,7 +52,7 @@ public class IntervalsIcuWorkoutTextService : IIntervalsIcuWorkoutTextService
         return sb.ToString();
     }
 
-    private static string BuildIntervalLine(WorkoutInterval interval, AthleteProfile? profile, SportType sport)
+    private static string BuildIntervalLine(WorkoutInterval interval, AthleteProfile profile, SportType sport)
     {
         var duration = FormatDuration(interval.DurationSeconds);
         var zoneName = interval.Type.ToString();
@@ -69,10 +77,10 @@ public class IntervalsIcuWorkoutTextService : IIntervalsIcuWorkoutTextService
         return $" - {description}";
     }
 
-    private static string GetPowerRange(WorkoutZoneType zoneType, AthleteProfile? profile)
+    private static string GetPowerRange(WorkoutZoneType zoneType, AthleteProfile profile)
     {
         // Get FTP and power zones from profile
-        var cyclingSport = profile?.GetCyclingSportSetting();
+        var cyclingSport = profile.GetCyclingSportSetting();
         var powerZones = cyclingSport?.PowerZones;
 
         // Zone index (Z1 = 0, Z2 = 1, etc.)
@@ -89,10 +97,10 @@ public class IntervalsIcuWorkoutTextService : IIntervalsIcuWorkoutTextService
         return "";
     }
 
-    private static string GetHeartRateRange(WorkoutZoneType zoneType, AthleteProfile? profile)
+    private static string GetHeartRateRange(WorkoutZoneType zoneType, AthleteProfile profile)
     {
         // Get LTHR and HR zones from profile
-        var sportSetting = profile?.GetRunningSportSetting();
+        var sportSetting = profile.GetRunningSportSetting();
         var hrZones = sportSetting?.HrZones;
 
         // Zone index (Z1 = 0, Z2 = 1, etc.)
