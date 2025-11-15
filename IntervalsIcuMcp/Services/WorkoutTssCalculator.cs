@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using IntervalsIcuMcp.Extensions;
 using IntervalsIcuMcp.Models;
 
@@ -104,7 +104,7 @@ public class WorkoutTssCalculator(ILogger<WorkoutTssCalculator> logger) : IWorko
         int zoneIndex = (int)zoneType;
 
         // If we have power zones and FTP, calculate IF from the zone boundaries
-        if (ctx.PowerZones is not null && ctx.PowerZones.Length > zoneIndex && ctx.FtpWatts is double ftp && ftp > 0)
+        if (ctx.PowerZones is not null && ctx.PowerZones.Count > zoneIndex && ctx.FtpWatts is double ftp && ftp > 0)
         {
             // PowerZones array contains the upper boundaries of each zone
             // Calculate the midpoint of the zone as a fraction of FTP
@@ -123,7 +123,7 @@ public class WorkoutTssCalculator(ILogger<WorkoutTssCalculator> logger) : IWorko
         int zoneIndex = (int)zoneType;
 
         // If we have HR zones and LTHR, calculate IF from the zone boundaries
-        if (ctx.HrZones is not null && ctx.HrZones.Length > zoneIndex && ctx.LthrBpm is double lthr && lthr > 0)
+        if (ctx.HrZones is not null && ctx.HrZones.Count > zoneIndex && ctx.LthrBpm is int lthr && lthr > 0)
         {
             // HrZones array contains the upper boundaries of each zone
             // Calculate the midpoint of the zone as a fraction of LTHR

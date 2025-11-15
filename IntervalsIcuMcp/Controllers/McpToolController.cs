@@ -1,4 +1,4 @@
-using IntervalsIcuMcp.Models;
+﻿using IntervalsIcuMcp.Models;
 using IntervalsIcuMcp.Services;
 using IntervalsIcuMcp.Models.IntervalsIcu;
 using Microsoft.AspNetCore.Mvc;
@@ -8,11 +8,11 @@ namespace IntervalsIcuMcp.Controllers
     [ApiController]
     [Route("[controller]")]
     public class McpToolController(
-        IAthleteProfileCache athleteCache,
+        IAthleteProfileRetriever athleteCache,
         IIntervalsIcuService icuService,
         IWorkoutGeneratorService workoutService) : ControllerBase
     {
-        private readonly IAthleteProfileCache _athleteCache = athleteCache;
+        private readonly IAthleteProfileRetriever _athleteCache = athleteCache;
         private readonly IIntervalsIcuService _icuService = icuService;
         private readonly IWorkoutGeneratorService _workoutService = workoutService;
 

@@ -1,4 +1,4 @@
-using IntervalsIcuMcp.Extensions;
+﻿using IntervalsIcuMcp.Extensions;
 using IntervalsIcuMcp.Models;
 using IntervalsIcuMcp.Models.IntervalsIcu;
 
@@ -9,10 +9,10 @@ public interface IWorkoutGeneratorService
    Task<Workout> GenerateWorkout(SportType sport, string title, string description, List<WorkoutInterval> intervals);
 }
 
-public class WorkoutGeneratorService(IWorkoutTssCalculator tssCalculator, IAthleteProfileCache athleteProfileCache) : IWorkoutGeneratorService
+public class WorkoutGeneratorService(IWorkoutTssCalculator tssCalculator, IAthleteProfileRetriever athleteProfileRetriever) : IWorkoutGeneratorService
 {
     private readonly IWorkoutTssCalculator _tssCalculator = tssCalculator;
-    private readonly IAthleteProfileCache _athleteProfileCache = athleteProfileCache;
+    private readonly IAthleteProfileRetriever _athleteProfileRetriever = athleteProfileRetriever;
 
     public async Task<Workout> GenerateWorkout(
         SportType sport,
@@ -20,31 +20,62 @@ public class WorkoutGeneratorService(IWorkoutTssCalculator tssCalculator, IAthle
         string description,
         List<WorkoutInterval> intervals)
     {
-        var profile = await _athleteProfileCache.GetAsync();
-        var context = CreateContextFromProfile(profile);
-        var estimatedTss = _tssCalculator.EstimateTss(intervals.ToArray(), context, sport);
-        var estimatedIf = _tssCalculator.EstimateIntensityFactor(intervals.ToArray(), context, sport);
-        return new Workout(sport, title, description, intervals.ToArray(), estimatedTss, estimatedIf);
+        var profile = await _athleteProfileRetriever.GetAsync() ?? throw new Exception("Could not retrieve profile from IntervalsIcu");
+        var context = CreateContextFromProfile(profile, sport);
+        var estimatedTss = _tssCalculator.EstimateTss(intervals, context, sport);
+        var estimatedIf = _tssCalculator.EstimateIntensityFactor(intervals, context, sport);
+        return new Workout(sport, title, description, intervals, estimatedTss, estimatedIf);
     }
 
-    private static WorkoutEstimationContext CreateContextFromProfile(AthleteProfile? profile)
+    private static WorkoutEstimationContext CreateContextFromProfile(AthleteProfile profile, SportType sportType)
     {
-        if (profile is null)
-        {
-            return new WorkoutEstimationContext();
-        }
-
-        // Extract cycling/bike FTP and HR data from sport settings
-        var cyclingSport = profile.GetCyclingSportSetting();
+        var sportSetting = GetSportSettingForProfile(profile, sportType);
+        ValidateProfileDataForSport(sportSetting, sportType);
 
         return new WorkoutEstimationContext
         {
-            FtpWatts = cyclingSport?.Ftp,
-            LthrBpm = cyclingSport?.Lthr,
-            MaxHrBpm = cyclingSport?.MaxHr,
-            RestHrBpm = profile.IcuRestingHr,
-            PowerZones = cyclingSport?.PowerZones,
-            HrZones = cyclingSport?.HrZones
+            FtpWatts = sportSetting.Ftp,
+            LthrBpm = sportSetting.Lthr.HasValue ? sportSetting.Lthr.Value : 0,
+            MaxHrBpm = sportSetting.MaxHr.HasValue ? sportSetting.MaxHr.Value : 0,
+            RestHrBpm = profile.IcuRestingHr.HasValue ? (int)profile.IcuRestingHr.Value : 0,
+            PowerZones = ConvertPowerZonesToWatts(sportSetting.PowerZones, sportSetting.Ftp),
+            HrZones = sportSetting.HrZones != null ? sportSetting.HrZones.ToList() : new List<int>()
         };
+    }
+
+    private static SportSetting GetSportSettingForProfile(AthleteProfile profile, SportType sportType)
+    {
+        var settings = sportType switch
+        {
+            var s when s.IsCycling() => profile.GetCyclingSportSetting(),
+            var s when s.IsRunning() => profile.GetRunningSportSetting(),
+            var s when s.IsSwimming() => profile.GetSwimmingSportSetting(),
+            _ => profile.GetSportSettingByType(sportType)
+        };
+        if (settings == null)
+            return profile.GetSportSettingByType(SportType.Other)
+                ?? throw new InvalidOperationException($"No sport settings found for {sportType} in AthleteProfile, and no 'Other' fallback available.");
+        return settings;
+    }
+
+    private static List<int>? ConvertPowerZonesToWatts(int[]? powerZonesPercent, double? ftpWatts)
+    {
+        if (powerZonesPercent == null || !ftpWatts.HasValue)
+            return null;
+        int ftp = (int)Math.Round(ftpWatts.Value);
+        return powerZonesPercent.Select(pz => ConvertPowerZoneFromPercentageOfFTPToWatts(pz, ftp)).ToList();
+    }
+
+    private static int ConvertPowerZoneFromPercentageOfFTPToWatts(int powerZone, int ftpWatts)
+    {
+        return (int)Math.Round((powerZone / 100.0) * ftpWatts);
+    }
+
+    private static void ValidateProfileDataForSport(SportSetting sportSetting, SportType sportType)
+    {
+        bool hasHrData = sportSetting.Lthr.HasValue && sportSetting.MaxHr.HasValue && sportSetting.HrZones != null && sportSetting.HrZones.Length > 0;
+        bool hasPowerData = sportSetting.Ftp.HasValue && sportSetting.PowerZones != null && sportSetting.PowerZones.Length > 0;
+        if (!hasHrData && !hasPowerData)
+            throw new InvalidOperationException($"Missing HR or Power data for {sportType} in AthleteProfile.");
     }
 }
