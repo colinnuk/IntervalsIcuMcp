@@ -1,5 +1,7 @@
 ﻿using IntervalsIcuMcp.Models;
 using IntervalsIcuMcp.Services;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace IntervalsIcuMcp.Tests.Services;
 
@@ -16,7 +18,8 @@ public class WorkoutTssCalculatorTests
     [SetUp]
     public void SetUp()
     {
-        _calculator = new WorkoutTssCalculator();
+        var loggerMock = new Mock<ILogger<WorkoutTssCalculator>>();
+        _calculator = new WorkoutTssCalculator(loggerMock.Object);
     }
 
     #region EstimateTss Tests
