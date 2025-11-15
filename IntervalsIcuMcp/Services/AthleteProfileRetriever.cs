@@ -1,19 +1,19 @@
-using IntervalsIcuMcp.Models.IntervalsIcu;
+﻿using IntervalsIcuMcp.Models.IntervalsIcu;
 
 namespace IntervalsIcuMcp.Services;
 
-public interface IAthleteProfileCache
+public interface IAthleteProfileRetriever
 {
     Task<AthleteProfile?> GetAsync();
     void Invalidate();
 }
 
-public class AthleteProfileCache(
+public class AthleteProfileRetriever(
     IIntervalsIcuService intervalsIcu,
-    ILogger<AthleteProfileCache> logger) : IAthleteProfileCache
+    ILogger<AthleteProfileRetriever> logger) : IAthleteProfileRetriever
 {
     private readonly IIntervalsIcuService _intervalsIcu = intervalsIcu;
-    private readonly ILogger<AthleteProfileCache> _logger = logger;
+    private readonly ILogger<AthleteProfileRetriever> _logger = logger;
     private AthleteProfile? _cachedProfile;
 
     public async Task<AthleteProfile?> GetAsync()

@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using IntervalsIcuMcp.Services;
 using IntervalsIcuMcp.Models.IntervalsIcu;
 using ModelContextProtocol.Server;
@@ -6,9 +6,9 @@ using ModelContextProtocol.Server;
 namespace IntervalsIcuMcp.McpServer;
 
 [McpServerToolType]
-public class IntervalsIcuMcpTool(IAthleteProfileCache athleteCache, IIntervalsIcuService icuService)
+public class IntervalsIcuMcpTool(IAthleteProfileRetriever athleteCache, IIntervalsIcuService icuService)
 {
-    private readonly IAthleteProfileCache _athleteCache = athleteCache;
+    private readonly IAthleteProfileRetriever _athleteCache = athleteCache;
     private readonly IIntervalsIcuService _icuService = icuService;
 
     [McpServerTool]

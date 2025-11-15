@@ -39,7 +39,7 @@ builder.Services.AddHttpClient(StringConsts.IntervalsIcuApiClientName, (serviceP
 
 // Register application services
 builder.Services.AddScoped<IIntervalsIcuService, IntervalsIcuService>();
-builder.Services.AddScoped<IAthleteProfileCache, AthleteProfileCache>();
+builder.Services.AddScoped<IAthleteProfileRetriever, AthleteProfileRetriever>();
 builder.Services.AddScoped<IWorkoutGeneratorService, WorkoutGeneratorService>();
 builder.Services.AddScoped<IIntervalsIcuWorkoutTextService, IntervalsIcuWorkoutTextService>();
 builder.Services.AddScoped<IWorkoutTssCalculator, WorkoutTssCalculator>();

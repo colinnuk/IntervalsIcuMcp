@@ -1,4 +1,4 @@
-using IntervalsIcuMcp.Extensions;
+﻿using IntervalsIcuMcp.Extensions;
 using IntervalsIcuMcp.Models;
 using IntervalsIcuMcp.Models.IntervalsIcu;
 
@@ -9,10 +9,10 @@ public interface IWorkoutGeneratorService
    Task<Workout> GenerateWorkout(SportType sport, string title, string description, List<WorkoutInterval> intervals);
 }
 
-public class WorkoutGeneratorService(IWorkoutTssCalculator tssCalculator, IAthleteProfileCache athleteProfileCache) : IWorkoutGeneratorService
+public class WorkoutGeneratorService(IWorkoutTssCalculator tssCalculator, IAthleteProfileRetriever athleteProfileCache) : IWorkoutGeneratorService
 {
     private readonly IWorkoutTssCalculator _tssCalculator = tssCalculator;
-    private readonly IAthleteProfileCache _athleteProfileCache = athleteProfileCache;
+    private readonly IAthleteProfileRetriever _athleteProfileCache = athleteProfileCache;
 
     public async Task<Workout> GenerateWorkout(
         SportType sport,
