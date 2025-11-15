@@ -25,8 +25,12 @@ public class WorkoutGeneratorMcpTool(IWorkoutGeneratorService service, IInterval
     [McpServerTool]
     [Description("Converts a Workout into intervals.icu workout builder text format. This tool MUST be called to display the formatted workout text that the user will copy and paste into the intervals.icu website.")]
     public async Task<string> ConvertWorkoutToIntervalsIcuTextAsync(
-        [Description("The Workout to convert (typically the result from GenerateWorkoutAsync)")] Workout workout)
+        [Description("The sport type for the workout (e.g., Ride, Run, Swim)")] SportType sport,
+        [Description("The title of the workout")] string title,
+        [Description("A description of the workout")] string description,
+        [Description("List of intervals for the workout")] List<WorkoutInterval> intervals)
     {
+        var workout = new GenerateWorkoutRequest(sport, title, description, intervals);
         return await _workoutTextService.ToIntervalsIcuTextAsync(workout);
     }
 }

@@ -7,14 +7,16 @@ namespace IntervalsIcuMcp.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class McpToolController(
+    public class McpToolTestController(
         IAthleteProfileRetriever athleteCache,
         IIntervalsIcuService icuService,
-        IWorkoutGeneratorService workoutService) : ControllerBase
+        IWorkoutGeneratorService workoutService,
+        IIntervalsIcuWorkoutTextService workoutTextService) : ControllerBase
     {
         private readonly IAthleteProfileRetriever _athleteCache = athleteCache;
         private readonly IIntervalsIcuService _icuService = icuService;
         private readonly IWorkoutGeneratorService _workoutService = workoutService;
+        private readonly IIntervalsIcuWorkoutTextService _workoutTextService = workoutTextService;
 
         [HttpGet("athlete-profile")]
         public async Task<ActionResult<AthleteProfile?>> GetAthleteProfile()
@@ -48,6 +50,13 @@ namespace IntervalsIcuMcp.Controllers
         public async Task<ActionResult<Workout>> GenerateWorkout([FromBody] GenerateWorkoutRequest request)
         {
             var result = await _workoutService.GenerateWorkout(request.Sport, request.Title, request.Description, request.Intervals);
+            return Ok(result);
+        }
+
+        [HttpPost("convert-workout-to-icu-text")]
+        public async Task<ActionResult<string>> ConvertWorkoutToIcuText([FromBody] GenerateWorkoutRequest workout)
+        {
+            var result = await _workoutTextService.ToIntervalsIcuTextAsync(workout);
             return Ok(result);
         }
     }

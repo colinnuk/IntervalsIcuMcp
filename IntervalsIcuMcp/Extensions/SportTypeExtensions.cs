@@ -1,4 +1,4 @@
-using IntervalsIcuMcp.Models;
+﻿using IntervalsIcuMcp.Models;
 using IntervalsIcuMcp.Models.IntervalsIcu;
 
 namespace IntervalsIcuMcp.Extensions;
@@ -92,5 +92,20 @@ public static class SportTypeExtensions
     {
         return profile.SportSettings?.FirstOrDefault(s =>
             s.Types.Contains(sportType));
+    }
+
+    public static SportSetting GetSportSettingForProfile(this AthleteProfile profile, SportType sportType)
+    {
+        var settings = sportType switch
+        {
+            var s when s.IsCycling() => profile.GetCyclingSportSetting(),
+            var s when s.IsRunning() => profile.GetRunningSportSetting(),
+            var s when s.IsSwimming() => profile.GetSwimmingSportSetting(),
+            _ => profile.GetSportSettingByType(sportType)
+        };
+        if (settings == null)
+            return profile.GetSportSettingByType(SportType.Other)
+                ?? throw new InvalidOperationException($"No sport settings found for {sportType} in AthleteProfile, and no 'Other' fallback available.");
+        return settings;
     }
 }
