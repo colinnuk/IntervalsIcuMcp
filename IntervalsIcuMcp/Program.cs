@@ -1,15 +1,16 @@
-using IntervalsIcuMcp.Models;
+﻿using IntervalsIcuMcp;
 using IntervalsIcuMcp.Helpers;
-using IntervalsIcuMcp;
-using Microsoft.Extensions.Options;
+using IntervalsIcuMcp.Models;
 using IntervalsIcuMcp.Services;
+using Microsoft.Extensions.Options;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add local settings file (gitignored) for development secrets
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
