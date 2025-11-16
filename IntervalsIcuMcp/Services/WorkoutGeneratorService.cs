@@ -29,33 +29,18 @@ public class WorkoutGeneratorService(IWorkoutTssCalculator tssCalculator, IAthle
 
     private static WorkoutEstimationContext CreateContextFromProfile(AthleteProfile profile, SportType sportType)
     {
-        var sportSetting = GetSportSettingForProfile(profile, sportType);
+        var sportSetting = profile.GetSportSettingForProfile(sportType);
         ValidateProfileDataForSport(sportSetting, sportType);
 
         return new WorkoutEstimationContext
         {
             FtpWatts = sportSetting.Ftp,
-            LthrBpm = sportSetting.Lthr.HasValue ? sportSetting.Lthr.Value : 0,
-            MaxHrBpm = sportSetting.MaxHr.HasValue ? sportSetting.MaxHr.Value : 0,
+            LthrBpm = sportSetting.Lthr ?? 0,
+            MaxHrBpm = sportSetting.MaxHr ?? 0,
             RestHrBpm = profile.IcuRestingHr.HasValue ? (int)profile.IcuRestingHr.Value : 0,
             PowerZones = ConvertPowerZonesToWatts(sportSetting.PowerZones, sportSetting.Ftp),
-            HrZones = sportSetting.HrZones != null ? sportSetting.HrZones.ToList() : new List<int>()
+            HrZones = sportSetting.HrZones != null ? sportSetting.HrZones.ToList() : []
         };
-    }
-
-    private static SportSetting GetSportSettingForProfile(AthleteProfile profile, SportType sportType)
-    {
-        var settings = sportType switch
-        {
-            var s when s.IsCycling() => profile.GetCyclingSportSetting(),
-            var s when s.IsRunning() => profile.GetRunningSportSetting(),
-            var s when s.IsSwimming() => profile.GetSwimmingSportSetting(),
-            _ => profile.GetSportSettingByType(sportType)
-        };
-        if (settings == null)
-            return profile.GetSportSettingByType(SportType.Other)
-                ?? throw new InvalidOperationException($"No sport settings found for {sportType} in AthleteProfile, and no 'Other' fallback available.");
-        return settings;
     }
 
     private static List<int>? ConvertPowerZonesToWatts(int[]? powerZonesPercent, double? ftpWatts)

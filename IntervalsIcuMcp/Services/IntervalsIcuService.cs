@@ -1,8 +1,9 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.Extensions.Options;
 using System.Text;
 using IntervalsIcuMcp.Models.IntervalsIcu;
 using IntervalsIcuMcp.Models;
+using System.Text.Json.Serialization;
 
 namespace IntervalsIcuMcp.Services;
 
@@ -18,15 +19,16 @@ public interface IIntervalsIcuService
 public class IntervalsIcuService(
     IHttpClientFactory httpClientFactory,
     IOptions<IntervalsIcuOptions> options,
-    ILogger<IntervalsIcuService> logger,
-    IIntervalsIcuWorkoutTextService workoutTextService) : IIntervalsIcuService
+    ILogger<IntervalsIcuService> logger) : IIntervalsIcuService
 {
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly IntervalsIcuOptions _options = options.Value;
     private readonly ILogger<IntervalsIcuService> _logger = logger;
-    private readonly IIntervalsIcuWorkoutTextService _workoutTextService = workoutTextService;
 
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new();
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    {
+        Converters = { new JsonStringEnumConverter() }
+    };
 
     public async Task<AthleteProfile?> GetAthleteProfileAsync()
     {
@@ -80,17 +82,13 @@ public class IntervalsIcuService(
     {
         _logger.LogInformation("Adding workout event: {WorkoutName} on {Date}", plannedWorkout.Name, plannedWorkout.DateTime);
 
-        var workoutText = _workoutTextService.ToIntervalsIcuText(plannedWorkout.Workout, athleteProfile);
-
         // Create the event request payload
         var eventRequest = new
         {
             category = "WORKOUT",
             start_date_local = plannedWorkout.DateTime.ToString("yyyy-MM-dd"),
             name = plannedWorkout.Name,
-            description = string.IsNullOrWhiteSpace(plannedWorkout.Notes)
-                ? workoutText
-                : $"{plannedWorkout.Notes}\n\n{workoutText}",
+            description = plannedWorkout.Notes,
             type = plannedWorkout.Workout.Sport.ToString()
         };
 
